@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>micro_ros_motor_ctrl</name>
+  <version>3.0.0</version>
+  <description>Mecanumbot micro-ROS Motor Controller</description>
+  <maintainer email="dewilliams0327@gmail.com">Dwayne Williams</maintainer>
+  <license>Apache License 2.0</license>
+</package>

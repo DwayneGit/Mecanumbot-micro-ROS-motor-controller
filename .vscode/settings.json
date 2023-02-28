@@ -1,0 +1,21 @@
+{
+  "files.associations": {
+    "twist.h": "c",
+    "twist__struct.h": "c",
+    "twist__functions.h": "c",
+    "twist__type_support.h": "c",
+    "mecanumbot.h": "c",
+    "bimotor.h": "c",
+    "pwm.h": "c",
+    "stdio.h": "c",
+    "pthread.h": "c",
+    "pico_uart_transports.h": "c",
+    "stdlib.h": "c",
+    "events.h": "c"
+  },
+  // "cmake.sourceDirectory": "${workspaceFolder}/pico_motor_controller",
+  "cmake.configureEnvironment": {
+    "PICO_SDK_PATH": "/home/robodev/pico/pico-sdk",
+    "MICRO_ROS_PICO_SDK_DIR": "/home/robodev/micro_ros_raspberrypi_pico_sdk"
+  }
+}
