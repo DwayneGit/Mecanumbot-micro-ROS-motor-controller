@@ -100,6 +100,8 @@ void create_entities()
 
     RCSOFTCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
+    /*----------------------------- Motor Controler Node ----------------------------------*/
+
     RCSOFTCHECK(rclc_node_init_default(&motor_ctrlr_node, "motor_ctrlr", "", &support));
 
     RCSOFTCHECK(rclc_subscription_init_default(
@@ -115,7 +117,9 @@ void create_entities()
     const uint64_t timeout_ns = 100000000;
     RCSOFTCHECK(rclc_executor_set_timeout(&motor_ctrlr_executor, timeout_ns));
 
-    RCSOFTCHECK(rclc_node_init_default(&motor_ctrlr_node, "wheel_ticks", "", &support));
+    /*------------------ Wheel Encoder Ticks Node - Odometry -----------------------------*/
+
+    RCSOFTCHECK(rclc_node_init_default(&wheel_ticks_node, "wheel_ticks", "", &support));
     
     RCSOFTCHECK(rclc_publisher_init_default(
         &publisher1, 

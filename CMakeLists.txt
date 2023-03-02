@@ -42,7 +42,7 @@ target_include_directories(micro_ros_motor_ctrl PUBLIC
 )
 
 target_compile_definitions(micro_ros_motor_ctrl PUBLIC
-    PICO_MAX_SHARED_IRQ_HANDLERS=7
+    PICO_MAX_SHARED_IRQ_HANDLERS=10
 )
 
 SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
