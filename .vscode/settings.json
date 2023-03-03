@@ -16,6 +16,6 @@
   // "cmake.sourceDirectory": "${workspaceFolder}/pico_motor_controller",
   "cmake.configureEnvironment": {
     "PICO_SDK_PATH": "/home/robodev/pico/pico-sdk",
-    "MICRO_ROS_PICO_SDK_DIR": "/home/robodev/micro_ros_raspberrypi_pico_sdk"
+    "MICRO_ROS_PICO_SDK_PATH": "/home/robodev/micro_ros_raspberrypi_pico_sdk"
   }
 }

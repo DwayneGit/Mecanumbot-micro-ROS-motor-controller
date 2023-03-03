@@ -14,26 +14,6 @@
 #include "include/micro_ros_motor_ctrl/mecanumbot.h"
 #include "include/micro_ros_motor_ctrl/pico_uart_transports.h"
 
-#define BRIDGE1_ENA 8 
-#define BRIDGE1_IN1 7
-#define BRIDGE1_IN2 6
-#define BRIDGE1_ENCA 18
-
-#define BRIDGE1_ENB 2
-#define BRIDGE1_IN3 4
-#define BRIDGE1_IN4 3
-#define BRIDGE1_ENCB 19
-
-#define BRIDGE2_ENA 10
-#define BRIDGE2_IN1 11
-#define BRIDGE2_IN2 12
-#define BRIDGE2_ENCA 20
-
-#define BRIDGE2_ENB 15
-#define BRIDGE2_IN3 13
-#define BRIDGE2_IN4 14
-#define BRIDGE2_ENCB 21
-
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Aborting.\n\r",__LINE__,(int)temp_rc); return 1;}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Continuing.\n\r",__LINE__,(int)temp_rc);}}
 
