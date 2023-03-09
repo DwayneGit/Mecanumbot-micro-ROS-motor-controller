@@ -6,8 +6,11 @@
 #include <geometry_msgs/msg/twist.h>
 #include <rmw_microros/rmw_microros.h>
 
-#include <std_msgs/msg/int16.h>
+#include <std_msgs/msg/int32.h>
+#include <std_msgs/msg/int32_multi_array.h>
+#include <std_msgs/msg/multi_array_dimension.h>
 #include <micro_ros_utilities/type_utilities.h>
+#include "rosidl_runtime_c/primitives_sequence_functions.h"
 
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -32,10 +35,7 @@ struct Mecanumbot *mecanumbot;
 rcl_node_t motor_ctrlr_node;
 rcl_node_t wheel_ticks_node;
 rcl_subscription_t subscriber;
-rcl_publisher_t publisher1;
-rcl_publisher_t publisher2;
-rcl_publisher_t publisher3;
-rcl_publisher_t publisher4;
+rcl_publisher_t enc_pub;
 rcl_allocator_t allocator;
 rclc_support_t support;
 rclc_executor_t motor_ctrlr_executor;
@@ -50,10 +50,7 @@ volatile bool exit_flag = false;
 
 typedef struct {
     struct Mecanumbot * mecanumbot;
-    rcl_publisher_t * publisher1;
-    rcl_publisher_t * publisher2;
-    rcl_publisher_t * publisher3;
-    rcl_publisher_t * publisher4;
+    rcl_publisher_t * enc_pub;
     int flag;
 } queue_node_req_t;
 
@@ -119,31 +116,13 @@ void create_entities()
 
     /*------------------ Wheel Encoder Ticks Node - Odometry -----------------------------*/
 
-    RCSOFTCHECK(rclc_node_init_default(&wheel_ticks_node, "wheel_ticks", "", &support));
+    RCSOFTCHECK(rclc_node_init_default(&wheel_ticks_node, "wheel_encoders", "", &support));
     
     RCSOFTCHECK(rclc_publisher_init_default(
-        &publisher1, 
+        &enc_pub, 
         &wheel_ticks_node, 
-        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16), 
-        "front_right_ticks"));
-
-    RCSOFTCHECK(rclc_publisher_init_default(
-        &publisher2, 
-        &wheel_ticks_node, 
-        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16), 
-        "front_left_ticks"));
-
-    RCSOFTCHECK(rclc_publisher_init_default(
-        &publisher3, 
-        &wheel_ticks_node, 
-        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16), 
-        "rear_right_ticks"));
-
-    RCSOFTCHECK(rclc_publisher_init_default(
-        &publisher4, 
-        &wheel_ticks_node, 
-        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16), 
-        "rear_left_ticks"));
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32MultiArray), 
+        "encoders"));
 
     RCSOFTCHECK(rclc_executor_init(&wheel_ticks_executor, &support.context, 1, &allocator));
     RCSOFTCHECK(rclc_executor_set_timeout(&wheel_ticks_executor, timeout_ns));
@@ -165,10 +144,7 @@ void destroy_entities()
     RCSOFTCHECK(rclc_executor_fini(&wheel_ticks_executor));
     RCSOFTCHECK(rclc_executor_fini(&motor_ctrlr_executor));
     RCSOFTCHECK(rcl_subscription_fini(&subscriber, &motor_ctrlr_node));
-	RCSOFTCHECK(rcl_publisher_fini(&publisher1, &wheel_ticks_node));
-	RCSOFTCHECK(rcl_publisher_fini(&publisher2, &wheel_ticks_node));
-	RCSOFTCHECK(rcl_publisher_fini(&publisher3, &wheel_ticks_node));
-	RCSOFTCHECK(rcl_publisher_fini(&publisher4, &wheel_ticks_node));
+	RCSOFTCHECK(rcl_publisher_fini(&enc_pub, &wheel_ticks_node));
     RCSOFTCHECK(rclc_support_fini(&support))
     RCSOFTCHECK(rcl_node_fini(&motor_ctrlr_node));
     RCSOFTCHECK(rcl_node_fini(&wheel_ticks_node));
@@ -179,6 +155,17 @@ void destroy_entities()
 
 void core1_entry() {
 	queue_node_req_t args;
+    std_msgs__msg__Int32MultiArray msg;
+    std_msgs__msg__Int32MultiArray__init(&msg);
+    std_msgs__msg__MultiArrayDimension__Sequence__init(&msg.layout.dim, 1);
+    
+    rosidl_runtime_c__String label;
+    label.data = "encoder_ticks";
+    msg.layout.dim.data[0].label = label;
+    msg.layout.dim.data[0].size = 4;
+    msg.layout.dim.data[0].stride = 1;
+    msg.layout.data_offset = 0;
+    rosidl_runtime_c__int32__Sequence__init(&msg.data, 4);
 
     gpio_set_irq_enabled(BRIDGE1_ENCA, GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(BRIDGE1_ENCB, GPIO_IRQ_EDGE_RISE, true);
@@ -196,10 +183,7 @@ void core1_entry() {
     printf("Waiting for core 0...\n\r");
 
     queue_remove_blocking(&node1_queue, &args);
-    rcl_publisher_t * publisher1 = args.publisher1;
-    rcl_publisher_t * publisher2 = args.publisher2;
-    rcl_publisher_t * publisher3 = args.publisher3;
-    rcl_publisher_t * publisher4 = args.publisher4;
+    rcl_publisher_t * enc_pub = args.enc_pub;
     struct Mecanumbot * mbot = args.mecanumbot;
     int id = args.flag;
 
@@ -211,10 +195,12 @@ void core1_entry() {
             struct timespec ts;
             clock_gettime(CLOCK_REALTIME, &ts);
 
-            RCSOFTCHECK(rcl_publish(publisher1, &mbot->motor1->encoderTickCount, NULL));
-            RCSOFTCHECK(rcl_publish(publisher2, &mbot->motor2->encoderTickCount, NULL));
-            RCSOFTCHECK(rcl_publish(publisher3, &mbot->motor3->encoderTickCount, NULL));
-            RCSOFTCHECK(rcl_publish(publisher4, &mbot->motor4->encoderTickCount, NULL));
+            msg.data.data[0] = mbot->motor1->encoderTickCount;
+            msg.data.data[1] = mbot->motor2->encoderTickCount;
+            msg.data.data[2] = mbot->motor3->encoderTickCount;
+            msg.data.data[3] = mbot->motor4->encoderTickCount;
+            
+            RCSOFTCHECK(rcl_publish(enc_pub, &msg, NULL));
             usleep(period_us);
         }
     }
@@ -268,10 +254,7 @@ int main()
                 else {
                     queue_node_req_t args = {
                         mecanumbot,
-                        &publisher1,
-                        &publisher2,
-                        &publisher3,
-                        &publisher4, 
+                        &enc_pub,
                         FLAG_VALUE
                     };
                     queue_add_blocking(&node1_queue, &args);
