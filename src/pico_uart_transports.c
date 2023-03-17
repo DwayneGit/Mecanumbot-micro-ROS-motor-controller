@@ -19,13 +19,13 @@ int clock_gettime(clockid_t unused, struct timespec *tp)
 bool pico_serial_transport_open(struct uxrCustomTransport * transport)
 {
     // stdio_init_all();
-    printf("{");
+    // printf("{");
     return true;
 }
 
 bool pico_serial_transport_close(struct uxrCustomTransport * transport)
 {
-    printf("}");
+    // printf("}");
     return true;
 }
 
