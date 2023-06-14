@@ -11,7 +11,19 @@
     "pthread.h": "c",
     "pico_uart_transports.h": "c",
     "stdlib.h": "c",
-    "events.h": "c"
+    "events.h": "c",
+    "common.h": "c",
+    "compare": "cpp",
+    "concepts": "cpp",
+    "type_traits": "cpp",
+    "cmath": "cpp",
+    "limits": "cpp",
+    "new": "cpp",
+    "clocks.h": "c",
+    "motor_state.h": "c",
+    "ws2812.pio.h": "c",
+    "pio.h": "c",
+    "motor2040.h": "c"
   },
   // "cmake.sourceDirectory": "${workspaceFolder}/pico_motor_controller",
   "cmake.configureEnvironment": {
