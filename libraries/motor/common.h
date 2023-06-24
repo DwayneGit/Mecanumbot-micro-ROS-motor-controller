@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef COMMON_H_
 #define COMMON_H_
 
@@ -39,7 +37,7 @@ const uint8_t GAMMA_8BIT[256] = {
     191, 193, 194, 196, 198, 200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220,
     222, 224, 227, 229, 231, 233, 235, 237, 239, 241, 244, 246, 248, 250, 252, 255};
 
-struct pin_pair {
+typedef struct {
     union {
         uint8_t first;
         uint8_t a;
@@ -52,8 +50,8 @@ struct pin_pair {
         uint8_t negative;
         uint8_t enable;
     };
-};
+} pin_pair;
 
-const struct pin_pair * pin_pair_init(uint8_t first, uint8_t second);
+const pin_pair * pin_pair_init(uint8_t first, uint8_t second);
 
 #endif /* COMMON_H_ */

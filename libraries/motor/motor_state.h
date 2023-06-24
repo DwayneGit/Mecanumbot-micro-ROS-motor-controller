@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef MOTOR_STATE_H_
 #define MOTOR_STATE_H_
 

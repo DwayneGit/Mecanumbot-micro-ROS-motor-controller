@@ -1,1 +1,2 @@
+add_subdirectory(motor)
 add_subdirectory(motor2040)

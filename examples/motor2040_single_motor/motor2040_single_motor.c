@@ -20,17 +20,19 @@ const uint STEPS_INTERVAL_MS = 500;
 const float SPEED_EXTENT = 1.0f;
 
 // const struct pin_pair * MOTOR_A
-struct Motor * m;
+Motor * m;
 
 int main() {
 // Create a motor
   MOTOR_A = pin_pair_init(MOTOR_A_P, MOTOR_A_N);
-  m = motor_init_default(MOTOR_A);
+
+  m = (Motor *) malloc(sizeof(Motor));
+  motor_new_default(m, MOTOR_A);
 
   stdio_init_all();
 
   // Initialise the motor
-  init(m);
+  motor_init(m);
 
   // Enable the motor
   motor_enable(m);
